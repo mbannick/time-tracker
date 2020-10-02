@@ -18,25 +18,24 @@ def start(item, outfile):
     }, index=[0])
     if os.path.exists(outfile):
         old = pd.read_csv(outfile)
-        if not old.loc[(old.item == item) & (old.end.isnull()), 'end'].empty:
+        if not old.loc[(old.end.isnull()), 'end'].empty:
             raise RuntimeError("Need to end the previous session for this item!")
         df = pd.concat([old, df], axis=0).reset_index(drop=True)
     df.to_csv(outfile, index=False)
 
 
-def end(item, outfile):
+def end(outfile):
     df = pd.read_csv(outfile)
-    if df.loc[(df.item == item) & (df.end.isnull()), 'end'].empty:
+    if df.loc[(df.end.isnull()), 'end'].empty:
         raise RuntimeError("Need to start a session for this item!")
-    df.loc[(df.item == item) & (df.end.isnull()), 'end'] = datetime.now()
+    df.loc[(df.end.isnull()), 'end'] = datetime.now()
     df.to_csv(outfile, index=False)
 
 
 def main():
 
     parser = ArgumentParser()
-    parser.add_argument('--item', type=str, required=True)
-    parser.add_argument('--start', action='store_true', required=False)
+    parser.add_argument('--item', type=str, required=False)
     args = parser.parse_args()
 
     with open(REPO / 'cfg.yml') as file:
@@ -44,14 +43,15 @@ def main():
         items = settings['items']
         outfile = settings['out_file'][0]
 
-    if args.item not in items:
-        raise RuntimeError("Unrecognized item {args.item}."
-                           "List of available items is {items}.")
+    if args.item:
+        if args.item not in items:
+            raise RuntimeError("Unrecognized item {args.item}."
+                               "List of available items is {items}.")
 
-    if args.start:
+    if args.item:
         start(args.item, outfile)
     else:
-        end(args.item, outfile)
+        end(outfile)
 
 
 if __name__ == '__main__':

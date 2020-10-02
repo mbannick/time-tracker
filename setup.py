@@ -26,8 +26,8 @@ if __name__ == '__main__':
         zip_safe=False,
         entry_points={
             'console_scripts': [
-                'trackit=trackit:main',
-                'summarize=summarize:main'
+                'track=trackit:main',
+                'summ=summarize:main'
             ]
         }
     )
