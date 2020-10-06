@@ -43,6 +43,10 @@ def main():
 
     df = df[['item', 'hours']]
     groups = df.groupby('item')['hours'].sum()
+    groups.sort_values(ascending=False, inplace=True)
+    print("\n")
+    print(f"Total {round(groups.sum(), 2)} HOURS")
+    print("--------------------")
     print(groups)
 
 
